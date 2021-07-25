@@ -1,0 +1,15 @@
+{% extends "network/layout.html" %}
+
+{% block body %}
+    {% if user.is_authenticated %}
+    <form method="POST">
+        {% csrf_token %}
+        <label for="text">Text:</label>
+        <textarea id="text" name="text"></textarea><br><br>
+        <button type="submit">Submit</button>
+    </form>
+    {% endif %}
+    {% for post in posts%}
+        <p>{{ post.text }}<br>{{ post.updated_on }}</p>
+    {% endfor %}
+{% endblock %}
