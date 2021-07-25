@@ -12,7 +12,10 @@
     </form>
     {% endif %}
     {% for post in posts%}
-        {{ post.author }}
-        <p>{{ post.text }}<br>{{ post.updated_on }}</p>
+        <div>
+            <p>{{ post.author }}</p>
+            <p>{{ post.text }}<br>{{ post.updated_on }}</p>
+            <button name={{ post.id }}--{{ post.author }} class="like-button" type="button">Like</button>
+        </div>
     {% endfor %}
 {% endblock %}

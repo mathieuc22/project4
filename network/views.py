@@ -3,8 +3,10 @@ from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
+from django.http import JsonResponse
+import json
 
-from .models import User, Post
+from .models import User, Post, Like
 
 
 def index(request):
@@ -67,3 +69,20 @@ def register(request):
         return HttpResponseRedirect(reverse("index"))
     else:
         return render(request, "network/register.html")
+
+def like_unlike(request):
+    # pour la method get prévoir la récupération des query string user et post et retourner l'object json
+    if request.method == "POST":
+        # print(json.load(request)['user'])
+        likeRequest = json.load(request)
+        # check if like exist
+        try:
+            likeConstraint = Like.objects.get(user__username=likeRequest['user'], post__id=likeRequest['post'])
+            print('Le like existe déjà')
+            return JsonResponse({'foo':'bar'})
+        except:
+            post = Post.objects.get(id=likeRequest['post'])
+            user = User.objects.get(username=likeRequest['user'])
+            like = Like.objects.create(user=user, post=post)
+            like.save()
+            return JsonResponse({'foo':'bar'})
