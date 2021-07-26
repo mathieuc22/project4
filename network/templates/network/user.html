@@ -14,6 +14,13 @@
             {% endfor %}
             </ul>
         </p>
+        <p class="card-text">Following: 
+            <ul>
+            {% for follow in following %}
+            <li>{{ follow.following }}</li>
+            {% endfor %}
+            </ul>
+        </p>
         <p class="card-text text-muted">Comment
             <ul>
             {% for comment in user_network.comments.all %}

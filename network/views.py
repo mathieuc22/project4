@@ -123,29 +123,36 @@ def users(request):
 
     # Query for users
     users = User.objects.all
+    user = User.objects.get(pk=request.user.id)
+    following = user.following.all()
+    followingList = []
+    for follow in following:
+        followingList.append(follow.following)
 
     # Return user profile
     if request.method == "GET":
-        return render(request, "network/users.html", {'users': users})
+        return render(request, "network/users.html", {'users': users, 'following': followingList})
 
 
 @login_required
 def follow(request):
 
-    # Query for users
-    user = User.objects.get(pk=request.user)
-    following = user.following.all()
-    user_follow = request.POST.get('follow')
-
     # Return user profile
     if request.method == "POST":
-        if user_follow not in following:
-            follow = Following.objects.create(user=user.id, following=following_user_id)
-        else:
-            follow = Following.objects.get(user=user.id, following=following_user_id)
+        # Query for users
+        user = User.objects.get(pk=request.user.id)
+        following = user.following.all()
+        user_follow_id = request.POST.get('follow')
+        user_follow = User.objects.get(pk=user_follow_id)
+
+        if following.filter(following__username=user_follow.username):
+            follow = following.filter(following__username=user_follow.username)
             follow.delete()
-        follow.save()
-    return render(request, "network/users.html", {'users': users})
+        else:
+            follow = Following.objects.create(user=user, following=user_follow)
+            follow.save()
+
+    return HttpResponseRedirect(reverse("users"))
 
 @login_required
 def user(request, user_id):
@@ -193,6 +200,5 @@ def post(request, post_id):
         else:
             post.likes.remove(request.user)
         post.save()
-        print({"status": "Like updated.", "post": len(post.likes.all())})
-        response = JsonResponse({"status": "Like updated.", "nbLikes": len(post.likes.all())})
+        response = JsonResponse({"status": "Like updated.", "nbLikes": post.number_of_likes()})
         return response
