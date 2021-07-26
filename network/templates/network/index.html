@@ -1,21 +1,44 @@
 {% extends "network/layout.html" %}
+{% load static %}
 
 {% block body %}
-    <h1>All Posts</h1>
-    {% if user.is_authenticated %}
-    <form method="POST">
-        {% csrf_token %}
-        <h2>New Post</h2>
-        <label for="text">Text:</label>
-        <textarea id="text" name="text"></textarea><br><br>
-        <button type="submit">Post</button>
-    </form>
-    {% endif %}
-    {% for post in posts%}
-        <div>
-            <p>{{ post.author }}</p>
-            <p>{{ post.text }}<br>{{ post.updated_on }}</p>
-            <button name={{ post.id }}--{{ post.author }} class="like-button" type="button">Like</button>
+
+    <div class="container">
+        <h2>All Posts</h2>
+        <div id="compose-view" class="card">
+            <div class="card-body">
+                <h4>New Post</h4>
+                <form method="POST" id="compose-form">
+                    <textarea class="form-control" id="compose-body" placeholder="Body"></textarea>
+                    <input type="submit" value="Post" class="btn btn-primary"/>
+                </form>
+            </div>
         </div>
-    {% endfor %}
+
+        <div id="post-view">
+        {% for post in posts %}
+            <div class="card">
+                <div class="card-body">
+                    <a href="{% url 'post' post_id=post.id %}">
+                        <p class="card-text">{{ post.author }}</p>
+                    </a>
+                        <p class="card-text">{{ post.text }}</p>
+                        <p class="card-text">{{ post.updated_on }}</p>
+                        <p class="card-text">
+                            <button id="button-{{ post.id }}" class="button-like button" type="button">
+                                {% if request.user in post.likes.all %}
+                                <i id="like-{{ post.id }}" class="fas fa-heart"></i>
+                                {% else %}
+                                <i id="like-{{ post.id }}" class="far fa-heart"></i>
+                                {% endif %}
+                            </button>
+                            <span>Likes: </span> <span id="nblikes-{{ post.id }}">{{ post.number_of_likes }}</span>
+                        </p>
+                        <p class="card-text text-muted">Comment</p>
+                    
+                </div>
+            </div>
+        {% endfor %}
+        </div>
+    </div> 
 {% endblock %}

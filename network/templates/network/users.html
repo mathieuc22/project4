@@ -1,0 +1,20 @@
+{% extends "network/layout.html" %}
+{% load static %}
+
+{% block body %}
+
+<ul>
+    {% for user in users %}
+    <li><a href="{% url 'user' user_id=user.id %}">{{ user }}</a> -
+        
+        <form method="POST" id="follow-form" action="{% url 'follow' %}">{% csrf_token %}
+            <input type="hidden" name="follow" value="{{ user.id }}">
+            <button class=button type="submit">
+                Follow
+            </button>
+        </form>
+    </li>
+    {% endfor %}
+</ul>
+
+{% endblock %}

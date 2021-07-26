@@ -1,0 +1,13 @@
+{% extends "network/layout.html" %}
+
+{% block body %}
+
+<div id="compose-view">
+    <h3>New Post</h3>
+    <form method="POST" id="compose-form">{% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" class="btn btn-primary"/>
+    </form>
+</div>
+
+{% endblock %}

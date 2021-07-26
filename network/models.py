@@ -7,23 +7,26 @@ class User(AbstractUser):
 
 class Post(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE)
-    text = models.CharField(max_length=300)
+    text = models.TextField(blank=True)
     created_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now= True)
+    likes = models.ManyToManyField(User, related_name='likes')
 
     class Meta: 
         ordering = ['-updated_on']
 
+    def number_of_likes(self):
+        return self.likes.count()
+
     def __str__(self):
         return self.text
 
-class Like(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+class Comment(models.Model):
+    user = models.ForeignKey("User", on_delete=models.CASCADE, related_name="comments")
+    post = models.ForeignKey("Post", on_delete=models.CASCADE, related_name="comments")
+    body = models.TextField(blank=True)
+    timestamp = models.DateTimeField(auto_now_add=True)
 
-    class Meta: constraints = [
-        models.UniqueConstraint(fields=['user', 'post'], name='unique_like')
-    ]
-
-    def __str__(self):
-        return f'{self.user} {self.post}'
+class Following(models.Model):
+    user = models.ForeignKey("User", on_delete=models.CASCADE, related_name="following")
+    following = models.ForeignKey("User", on_delete=models.CASCADE, related_name="followers")

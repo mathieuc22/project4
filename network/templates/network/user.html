@@ -1,0 +1,26 @@
+{% extends "network/layout.html" %}
+{% load static %}
+
+{% block body %}
+
+<div class="card">
+    <div class="card-body">
+        <p class="card-text">Name: {{ user_network.username }}</p>
+        <p class="card-text">Mail: {{ user_network.email }}</p>
+        <p class="card-text">Posts: 
+            <ul>
+            {% for post in user_network.posts.all %}
+            <li>{{ post }}</li>
+            {% endfor %}
+            </ul>
+        </p>
+        <p class="card-text text-muted">Comment
+            <ul>
+            {% for comment in user_network.comments.all %}
+            <li>{{ comment }}</li>
+            {% endfor %}
+            </ul>
+        </p>
+    </div>
+</div>
+{% endblock %}
