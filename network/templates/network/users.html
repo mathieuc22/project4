@@ -11,13 +11,11 @@
         <form method="POST" id="follow-form" action="{% url 'follow' %}">{% csrf_token %}
             <input type="hidden" name="follow" value="{{ user.id }}">
             <button id="user-{{ user.id }}" class=button type="submit">
-                {% for follow in following %}
-                {% if follow == user %}
+                {% if user in following %}
                     Unfollow
                 {% else %}
                     Follow
                 {% endif %}
-                {% endfor %}
             </button>
         </form>
     </li>
