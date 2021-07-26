@@ -151,22 +151,24 @@ def follow(request):
         else:
             follow = Following.objects.create(user=user, following=user_follow)
             follow.save()
-
-    return HttpResponseRedirect(reverse("users"))
+        print(request.path_info)
+    return redirect(request.META.get('HTTP_REFERER', 'redirect_if_referer_not_found'))
 
 @login_required
 def user(request, user_id):
 
-    # Query for requested email
     try:
         user = User.objects.get(pk=user_id)
     except Post.DoesNotExist:
         return JsonResponse({"error": "User not found."}, status=404)
     
-    following = user.following.all()
+    followers = user.followers.all()
+    followersList = []
+    for follow in followers:
+        followersList.append(follow.user)
 
     # Return user profile
-    return render(request, "network/user.html", {'user_network': user, 'following': following})
+    return render(request, "network/user.html", {'user_network': user, 'followers': followersList})
 
 @login_required
 def posts(request):

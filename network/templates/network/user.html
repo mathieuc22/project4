@@ -6,6 +6,21 @@
 <div class="card">
     <div class="card-body">
         <p class="card-text">Name: {{ user_network.username }}</p>
+        <p class="card-text">
+        {% if user_network != request.user %}
+        <form method="POST" id="follow-form" action="{% url 'follow' %}">{% csrf_token %}
+            <input type="hidden" name="follow" value="{{ user_network.id }}">
+            <button id="user-{{ user.id }}" class=button type="submit">
+                {% if request.user in followers %}
+                    Unfollow
+                {% else %}
+                    Follow
+                {% endif %}
+            </button>
+        </form>
+        {% endif %}
+        </p>
+        <p class="card-text">Followers: {{ user_network.followers.count }}</p>
         <p class="card-text">Mail: {{ user_network.email }}</p>
         <p class="card-text">Posts: 
             <ul>
@@ -14,9 +29,9 @@
             {% endfor %}
             </ul>
         </p>
-        <p class="card-text">Following: 
+        <p class="card-text">Following ({{ user_network.following.count }}): 
             <ul>
-            {% for follow in following %}
+            {% for follow in user_network.following.all %}
             <li>{{ follow.following }}</li>
             {% endfor %}
             </ul>
