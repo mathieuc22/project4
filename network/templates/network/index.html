@@ -23,7 +23,8 @@
                         <p class="card-text">{{ post.author }}</p>
                     </a>
                         <p class="card-text">{{ post.text }}</p>
-                        <p class="card-text">{{ post.updated_on }}</p>
+                        <p class="card-text">Post created on: {{ post.created_on }}</p>
+                        <p class="card-text">Last update: {{ post.updated_on }}</p>
                         <p class="card-text">
                             <button id="button-{{ post.id }}" class="button-like button" type="button">
                                 {% if request.user in post.likes.all %}
