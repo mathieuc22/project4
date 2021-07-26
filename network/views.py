@@ -138,8 +138,13 @@ def follow(request):
 
 @login_required
 def following(request):
-    # Filter emails returned based on mailbox
-    posts = Post.objects.all()
+    
+    following = request.user.following.all()
+    followingList = []
+    for follow in following:
+        followingList.append(follow.following)
+    posts = Post.objects.filter(author__in=followingList)
+
     context = {'posts': posts}
     return render(request, "network/index.html", context)
 
