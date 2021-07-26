@@ -5,15 +5,21 @@
 
 <ul>
     {% for user in users %}
+    {% if user != request.user %}
     <li><a href="{% url 'user' user_id=user.id %}">{{ user }}</a> -
         
         <form method="POST" id="follow-form" action="{% url 'follow' %}">{% csrf_token %}
             <input type="hidden" name="follow" value="{{ user.id }}">
-            <button class=button type="submit">
-                Follow
+            <button id="user-{{ user.id }}" class=button type="submit">
+                {% if user in following %}
+                    Unfollow
+                {% else %}
+                    Follow
+                {% endif %}
             </button>
         </form>
     </li>
+    {% endif %}
     {% endfor %}
 </ul>
 

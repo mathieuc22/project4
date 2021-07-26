@@ -5,6 +5,7 @@ from django.http import HttpResponse, HttpResponseRedirect, JsonResponse, respon
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_http_methods
 
 import json
 
@@ -99,71 +100,70 @@ def new_post(request):
 
     return JsonResponse({"message": "Post sent successfully."}, status=201)
 
-@csrf_exempt
-@login_required
-def like(request, post_id):
-
-    # Query for requested email
-    try:
-        post = Post.objects.get(pk=post_id)
-    except Post.DoesNotExist:
-        return JsonResponse({"error": "Post not found."}, status=404)
-
-    # Return email contents
-    if request.method == "POST":
-        if request.user not in post.likes.all():
-            post.likes.add(request.user)
-        else:
-            post.likes.remove(request.user)
-        post.save()
-        return HttpResponseRedirect(reverse("index"))
-
 @login_required
 def users(request):
 
     # Query for users
     users = User.objects.all
+    user = User.objects.get(pk=request.user.id)
+    following = user.following.all()
+    followingList = []
+    for follow in following:
+        followingList.append(follow.following)
 
     # Return user profile
     if request.method == "GET":
-        return render(request, "network/users.html", {'users': users})
+        return render(request, "network/users.html", {'users': users, 'following': followingList})
 
 
 @login_required
 def follow(request):
 
-    # Query for users
-    user = User.objects.get(pk=request.user)
-    following = user.following.all()
-    user_follow = request.POST.get('follow')
-
     # Return user profile
     if request.method == "POST":
-        if user_follow not in following:
-            follow = Following.objects.create(user=user.id, following=following_user_id)
-        else:
-            follow = Following.objects.get(user=user.id, following=following_user_id)
+        # Query for users
+        user = User.objects.get(pk=request.user.id)
+        following = user.following.all()
+        user_follow_id = request.POST.get('follow')
+        user_follow = User.objects.get(pk=user_follow_id)
+
+        if following.filter(following__username=user_follow.username):
+            follow = following.filter(following__username=user_follow.username)
             follow.delete()
-        follow.save()
-    return render(request, "network/users.html", {'users': users})
+        else:
+            follow = Following.objects.create(user=user, following=user_follow)
+            follow.save()
+        print(request.path_info)
+    return redirect(request.META.get('HTTP_REFERER', 'redirect_if_referer_not_found'))
+
+@login_required
+def following(request):
+    
+    following = request.user.following.all()
+    followingList = []
+    for follow in following:
+        followingList.append(follow.following)
+    posts = Post.objects.filter(author__in=followingList)
+
+    context = {'posts': posts}
+    return render(request, "network/index.html", context)
+
 
 @login_required
 def user(request, user_id):
 
-    # Query for requested email
     try:
         user = User.objects.get(pk=user_id)
     except Post.DoesNotExist:
         return JsonResponse({"error": "User not found."}, status=404)
     
-    following = user.following.all()
+    followers = user.followers.all()
+    followersList = []
+    for follow in followers:
+        followersList.append(follow.user)
 
     # Return user profile
-    return render(request, "network/user.html", {'user_network': user, 'following': following})
-
-@login_required
-def posts(request):
-    return HttpResponseRedirect(reverse("index"))
+    return render(request, "network/user.html", {'user_network': user, 'followers': followersList})
 
 @csrf_exempt
 @login_required
@@ -193,6 +193,5 @@ def post(request, post_id):
         else:
             post.likes.remove(request.user)
         post.save()
-        print({"status": "Like updated.", "post": len(post.likes.all())})
-        response = JsonResponse({"status": "Like updated.", "nbLikes": len(post.likes.all())})
+        response = JsonResponse({"status": "Like updated.", "nbLikes": post.number_of_likes()})
         return response
