@@ -5,6 +5,7 @@ from django.http import HttpResponse, HttpResponseRedirect, JsonResponse, respon
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_http_methods
 
 import json
 
@@ -99,25 +100,6 @@ def new_post(request):
 
     return JsonResponse({"message": "Post sent successfully."}, status=201)
 
-@csrf_exempt
-@login_required
-def like(request, post_id):
-
-    # Query for requested email
-    try:
-        post = Post.objects.get(pk=post_id)
-    except Post.DoesNotExist:
-        return JsonResponse({"error": "Post not found."}, status=404)
-
-    # Return email contents
-    if request.method == "POST":
-        if request.user not in post.likes.all():
-            post.likes.add(request.user)
-        else:
-            post.likes.remove(request.user)
-        post.save()
-        return HttpResponseRedirect(reverse("index"))
-
 @login_required
 def users(request):
 
@@ -155,6 +137,14 @@ def follow(request):
     return redirect(request.META.get('HTTP_REFERER', 'redirect_if_referer_not_found'))
 
 @login_required
+def following(request):
+    # Filter emails returned based on mailbox
+    posts = Post.objects.all()
+    context = {'posts': posts}
+    return render(request, "network/index.html", context)
+
+
+@login_required
 def user(request, user_id):
 
     try:
@@ -169,10 +159,6 @@ def user(request, user_id):
 
     # Return user profile
     return render(request, "network/user.html", {'user_network': user, 'followers': followersList})
-
-@login_required
-def posts(request):
-    return HttpResponseRedirect(reverse("index"))
 
 @csrf_exempt
 @login_required
