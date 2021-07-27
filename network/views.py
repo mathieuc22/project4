@@ -6,22 +6,21 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
+from django.core.paginator import Paginator
 
 import json
 
 from .models import User, Post, Comment, Following
 
 def index(request):
-    # Authenticated users view the page
-    if request.user.is_authenticated:
-        # Filter emails returned based on mailbox
-        posts = Post.objects.all()
-        context = {'posts': posts}
-        return render(request, "network/index.html", context)
+    # Filter emails returned based on mailbox
+    allposts = Post.objects.all()
+    paginator = Paginator(allposts, 10)
 
-    # Everyone else is prompted to sign in
-    else:
-        return HttpResponseRedirect(reverse("login"))
+    page_number = request.GET.get('page')
+    posts = paginator.get_page(page_number)
+    context = {'posts': posts}
+    return render(request, "network/index.html", context)
 
 def login_view(request):
     if request.method == "POST":
@@ -143,7 +142,12 @@ def following(request):
     followingList = []
     for follow in following:
         followingList.append(follow.following)
-    posts = Post.objects.filter(author__in=followingList)
+    allposts = Post.objects.filter(author__in=followingList)
+
+    paginator = Paginator(allposts, 10)
+
+    page_number = request.GET.get('page')
+    posts = paginator.get_page(page_number)
 
     context = {'posts': posts}
     return render(request, "network/index.html", context)
