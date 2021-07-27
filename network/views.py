@@ -188,10 +188,25 @@ def post(request, post_id):
 
     # Update whether email is read or should be archived
     elif request.method == "PUT":
-        if request.user not in post.likes.all():
-            post.likes.add(request.user)
+        # Get contents
+        data = json.loads(request.body)
+        
+
+        if "like" in data:
+            if request.user not in post.likes.all():
+                post.likes.add(request.user)
+            else:
+                post.likes.remove(request.user)
+            post.save()
+            response = JsonResponse({"status": "Like updated.", "nbLikes": post.number_of_likes()})
         else:
-            post.likes.remove(request.user)
-        post.save()
-        response = JsonResponse({"status": "Like updated.", "nbLikes": post.number_of_likes()})
+            post.text = data.get("text")
+            post.save()
+            print(post.updated_on)
+            response = JsonResponse({
+                "status": "Text updated",
+                "newText": post.text,
+                "updateDate": post.updated_on.strftime("%B %d, %Y, %H:%M %p"),
+                })
+                
         return response

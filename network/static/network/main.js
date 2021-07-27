@@ -18,6 +18,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // Like Unlike logic on hearts
     document.querySelectorAll('.button-like').forEach(button => { button.addEventListener('click', (event) => like_post(event)) });
   
+    // Like Unlike logic on hearts
+    document.querySelectorAll('.button-edit').forEach(button => { button.addEventListener('click', edit_post) });
+  
   });
   
   function send_post(event) {
@@ -40,6 +43,62 @@ document.addEventListener('DOMContentLoaded', function() {
   
     // set wait to let the request return
     setTimeout(() => {document.location.reload();}, 100);
+  }
+  
+  function edit_post(event) {
+    
+    // remove the existing event on the button
+    const button = event.target;
+    button.removeEventListener('click', edit_post);
+    button.innerHTML = 'Save';
+    button.addEventListener('click', save_post);
+
+    // create the textarea and hide the paragraph
+    const id = button.id.split('-')[2];
+    const postContainter = document.querySelector(`#post-container-${id}`);
+    const postText = document.querySelector(`#post-content-${id}`);
+    postText.style.display = 'none'
+    const postEdit = document.createElement("textarea");
+    postEdit.setAttribute('class','form-control');
+    postEdit.setAttribute('id',`post-edit-${id}`);
+    postEdit.innerHTML = postText.innerHTML;
+    postContainter.appendChild(postEdit);
+
+
+    // <textarea class="form-control" id="compose-body" placeholder="Body"></textarea>
+
+  }
+
+  function save_post(event) {
+
+    // remove the existing event on the button
+    const button = event.target;
+    const id = button.id.split('-')[2];
+    const postText = document.querySelector(`#post-content-${id}`);
+    const postEdit = document.querySelector(`#post-edit-${id}`);
+    const postUpate = document.querySelector(`#post-update-${id}`);
+
+    fetch(`/posts/${id}`, {
+      method: 'PUT',
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        text: postEdit.value
+      })
+    })
+    .then(response => response.json())
+    .then(post => {
+        // Print result
+        postText.removeAttribute('style');
+        postText.innerHTML = post.newText;
+        postEdit.remove();
+        button.innerHTML = 'Edit';
+        button.addEventListener('click', edit_post);
+        postUpate.innerHTML = `Last update: ${post.updateDate}`;
+    });
+
   }
   
   function like_post(event) {

@@ -22,9 +22,16 @@
                     <a href="{% url 'user' user_id=post.author.id %}">
                         <p class="card-text">{{ post.author }}</p>
                     </a>
-                        <p class="card-text">{{ post.text }}</p>
+                        <div  id="post-container-{{ post.id }}">
+                            <p id="post-content-{{ post.id }}" class="card-text">{{ post.text }}</p>
+                        </div>
+                        {% if request.user == post.author %}
+                        <button id="button-edit-{{ post.id }}" class="btn btn-primary button-edit" type="button">
+                            Edit
+                        </button>
+                        {% endif %}
                         <p class="card-text">Post created on: {{ post.created_on }}</p>
-                        <p class="card-text">Last update: {{ post.updated_on }}</p>
+                        <p id="post-update-{{ post.id }}" class="card-text">Last update: {{ post.updated_on }}</p>
                         <p class="card-text">
                             <button id="button-{{ post.id }}" class="button-like button" type="button">
                                 {% if request.user in post.likes.all %}
