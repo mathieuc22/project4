@@ -50,7 +50,7 @@
         </div>
 
         {% if posts.paginator.num_pages > 1%}
-        <ul class="pagination">
+        <ul class="pagination justify-content-center">
             {% if posts.has_previous %}
             <li class="page-item">
                 <a class="page-link" href="?page={{ posts.previous_page_number }}" aria-label="Previous">
