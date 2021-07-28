@@ -3,11 +3,10 @@
 
 {% block body %}
 
-    <div class="container">
-        <div class="card">
-        <h1 class="card-header">All Posts</h2>
+    <div class="main__container">
+        <h1 class="">All Posts</h2>
         {% if user.is_authenticated %}
-        <div id="compose-view" class="card">
+        <div id="compose-view" class="compose">
             <div class="card-body">
                 <h4>New Post</h4>
                 <form method="POST" id="compose-form">
@@ -21,7 +20,7 @@
         <div id="post-view">
         {% if posts %}
         {% for post in posts %}
-            <div class="card">
+            <div class="post">
                 <div class="card-body">
                     <a href="{% url 'user' user_id=post.author.id %}">
                         <p class="card-text">{{ post.author }}</p>
@@ -34,7 +33,7 @@
                             Edit
                         </button>
                         {% endif %}
-                        <p class="card-text text-muted">{{ post.created_on }}</p>
+                        <p class="card-text">{{ post.created_on }}</p>
                         <p class="card-text">
                             <button id="button-{{ post.id }}" class="button-like button" type="button">
                                 {% if request.user in post.likes.all %}
@@ -61,14 +60,14 @@
             <li class="page-item">
                 <a class="page-link" href="?page={{ posts.previous_page_number }}" aria-label="Previous">
                 <span aria-hidden="true">&laquo;</span>
-              </a>
+            </a>
             </li>
             <li class="page-item {{ posts.previous_page_number }}"><a class="page-link" href="?page={{ posts.previous_page_number }}">{{ posts.previous_page_number }}</a></li>
             {% else %}
             <li class="page-item disabled">
                 <a class="page-link" href="#" aria-label="Previous">
                 <span aria-hidden="true">&laquo;</span>
-              </a>
+            </a>
             </li>
             {% endif %}
 
@@ -77,19 +76,18 @@
             {% if posts.has_next %}
             <li class="page-item {{ posts.next_page_number }}"><a class="page-link" href="?page={{ posts.next_page_number }}">{{ posts.next_page_number }}</a></li>
             <li class="page-item">
-              <a class="page-link" href="?page={{ posts.next_page_number }}" aria-label="Next">
+            <a class="page-link" href="?page={{ posts.next_page_number }}" aria-label="Next">
                 <span aria-hidden="true">&raquo;</span>
-              </a>
+            </a>
             </li>
             {% else %}
             <li class="page-item disabled">
                 <a class="page-link" href="#" aria-label="Next">
                 <span aria-hidden="true">&raquo;</span>
-              </a>
+            </a>
             </li>
             {% endif %}
         </ul>
         {% endif %}
     </div>
-    </div> 
 {% endblock %}

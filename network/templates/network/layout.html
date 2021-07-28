@@ -14,10 +14,8 @@
     </head>
     <body>
 
-        <header>
-
-
-            <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <header class="header">
+            <nav class="navbar navbar-expand-lg navbar-light">
                 <a class="navbar-brand" id="index" href="{% url 'index' %}">Network</a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                   <span class="navbar-toggler-icon"></span>
@@ -56,7 +54,7 @@
                 </div>
             </nav>
         </header>
-        <main class="body">
+        <main class="main">
             {% block body %}
             {% endblock %}
         </main>
