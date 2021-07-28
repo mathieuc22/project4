@@ -4,15 +4,18 @@ document.addEventListener('DOMContentLoaded', function() {
     const path = window.location.pathname;
     const page = path.split("/").pop();
   
+    console.log(page);
     // Sélection des fonctions à exécuter en fonction de la page courante
     switch (page) {
       case "":
-      case "index.html":
+      case "posts":
         // Clear out composition fields
         document.querySelector('#compose-body').value = '';
         // Prevent submit on form and call the compose API
         document.querySelector('#compose-form').addEventListener('submit', send_post);
         break;
+      case "following":
+        document.getElementById('compose-view').style.display = 'none';
     }
   
     // Like Unlike logic on hearts
