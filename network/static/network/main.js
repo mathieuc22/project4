@@ -9,21 +9,24 @@ document.addEventListener('DOMContentLoaded', function() {
     switch (page) {
       case "":
       case "posts":
-        // Clear out composition fields
-        document.querySelector('#compose-body').value = '';
-        // Prevent submit on form and call the compose API
-        document.querySelector('#compose-form').addEventListener('submit', send_post);
+        try {
+          // Clear out composition fields
+          document.querySelector('#compose-body').value = '';
+          // Prevent submit on form and call the compose API
+          document.querySelector('#compose-form').addEventListener('submit', send_post);
+          // Like Unlike logic on hearts
+          document.querySelectorAll('.button-like').forEach(button => { button.addEventListener('click', (event) => like_post(event)) });
+          // Edit users posts
+          document.querySelectorAll('.button-edit').forEach(button => { button.addEventListener('click', edit_post) });
+        
+        } catch {
+
+        }
         break;
       case "following":
         document.getElementById('compose-view').style.display = 'none';
+        document.querySelector('h1').innerHTML = 'Following'
     }
-  
-    // Like Unlike logic on hearts
-    document.querySelectorAll('.button-like').forEach(button => { button.addEventListener('click', (event) => like_post(event)) });
-  
-    // Like Unlike logic on hearts
-    document.querySelectorAll('.button-edit').forEach(button => { button.addEventListener('click', edit_post) });
-  
   });
   
   function send_post(event) {
@@ -79,7 +82,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const id = button.id.split('-')[2];
     const postText = document.querySelector(`#post-content-${id}`);
     const postEdit = document.querySelector(`#post-edit-${id}`);
-    const postUpate = document.querySelector(`#post-update-${id}`);
 
     fetch(`/posts/${id}`, {
       method: 'PUT',
@@ -99,7 +101,6 @@ document.addEventListener('DOMContentLoaded', function() {
         postEdit.remove();
         button.innerHTML = 'Edit';
         button.addEventListener('click', edit_post);
-        postUpate.innerHTML = `Last update: ${post.updateDate}`;
     });
 
   }

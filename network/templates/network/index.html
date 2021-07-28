@@ -4,7 +4,9 @@
 {% block body %}
 
     <div class="container">
-        <h2>All Posts</h2>
+        <div class="card">
+        <h1 class="card-header">All Posts</h2>
+        {% if user.is_authenticated %}
         <div id="compose-view" class="card">
             <div class="card-body">
                 <h4>New Post</h4>
@@ -14,8 +16,10 @@
                 </form>
             </div>
         </div>
+        {% endif %}
 
         <div id="post-view">
+        {% if posts %}
         {% for post in posts %}
             <div class="card">
                 <div class="card-body">
@@ -23,15 +27,14 @@
                         <p class="card-text">{{ post.author }}</p>
                     </a>
                         <div  id="post-container-{{ post.id }}">
-                            <p id="post-content-{{ post.id }}" class="card-text">{{ post.text }}</p>
+                            <p id="post-content-{{ post.id }}" class="card-text">{{ post.text|linebreaks }}</p>
                         </div>
                         {% if request.user == post.author %}
                         <button id="button-edit-{{ post.id }}" class="btn btn-primary button-edit" type="button">
                             Edit
                         </button>
                         {% endif %}
-                        <p class="card-text">Post created on: {{ post.created_on }}</p>
-                        <p id="post-update-{{ post.id }}" class="card-text">Last update: {{ post.updated_on }}</p>
+                        <p class="card-text text-muted">{{ post.created_on }}</p>
                         <p class="card-text">
                             <button id="button-{{ post.id }}" class="button-like button" type="button">
                                 {% if request.user in post.likes.all %}
@@ -40,13 +43,16 @@
                                 <i id="like-{{ post.id }}" class="far fa-heart"></i>
                                 {% endif %}
                             </button>
-                            <span>Likes: </span> <span id="nblikes-{{ post.id }}">{{ post.number_of_likes }}</span>
+                            <span id="nblikes-{{ post.id }}">{{ post.number_of_likes }}</span>
                         </p>
                         <p class="card-text text-muted">Comment</p>
                     
                 </div>
             </div>
         {% endfor %}
+        {% else %}
+        <div class="card-text">No post yet</div>
+        {% endif %}
         </div>
 
         {% if posts.paginator.num_pages > 1%}
@@ -57,6 +63,7 @@
                 <span aria-hidden="true">&laquo;</span>
               </a>
             </li>
+            <li class="page-item {{ posts.previous_page_number }}"><a class="page-link" href="?page={{ posts.previous_page_number }}">{{ posts.previous_page_number }}</a></li>
             {% else %}
             <li class="page-item disabled">
                 <a class="page-link" href="#" aria-label="Previous">
@@ -64,12 +71,13 @@
               </a>
             </li>
             {% endif %}
-            {% for page in posts.paginator.page_range %}
-                <li class="page-item {% if posts.number == page %} active {% endif %}"><a class="page-link" href="?page={{ page }}">{{ page }}</a></li>
-            {% endfor %}
+
+            <li class="page-item {{ posts.number }} active"><a class="page-link" href="?page={{ posts.number }}">{{ posts.number }}</a></li>
+
             {% if posts.has_next %}
+            <li class="page-item {{ posts.next_page_number }}"><a class="page-link" href="?page={{ posts.next_page_number }}">{{ posts.next_page_number }}</a></li>
             <li class="page-item">
-              <a class="page-link" href="?page={{ posts.paginator.num_pages }}" aria-label="Next">
+              <a class="page-link" href="?page={{ posts.next_page_number }}" aria-label="Next">
                 <span aria-hidden="true">&raquo;</span>
               </a>
             </li>
@@ -82,6 +90,6 @@
             {% endif %}
         </ul>
         {% endif %}
-
+    </div>
     </div> 
 {% endblock %}

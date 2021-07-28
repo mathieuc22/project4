@@ -3,24 +3,27 @@
 
 {% block body %}
 
-<ul>
-    {% for user in users %}
-    {% if user != request.user %}
-    <li><a href="{% url 'user' user_id=user.id %}">{{ user }}</a> -
-        
-        <form method="POST" id="follow-form" action="{% url 'follow' %}">{% csrf_token %}
-            <input type="hidden" name="follow" value="{{ user.id }}">
-            <button id="user-{{ user.id }}" class=button type="submit">
-                {% if user in following %}
-                    Unfollow
-                {% else %}
-                    Follow
-                {% endif %}
-            </button>
-        </form>
-    </li>
-    {% endif %}
-    {% endfor %}
-</ul>
-
+<div class="container">
+    <div class="card">
+        <h1 class="card-header">Users</h1>
+        <ul class="list-group">
+            {% for user in users %}
+            {% if user != request.user %}
+            <li class="list-group-item"><a href="{% url 'user' user_id=user.id %}">{{ user }}</a>
+                <form method="POST" id="follow-form" action="{% url 'follow' %}">{% csrf_token %}
+                    <input type="hidden" name="follow" value="{{ user.id }}">
+                    <button id="user-{{ user.id }}" class="btn btn-primary" type="submit">
+                        {% if user in following %}
+                            Unfollow
+                        {% else %}
+                            Follow
+                        {% endif %}
+                    </button>
+                </form>
+            </li>
+            {% endif %}
+            {% endfor %}
+        </ul>
+    </div>
+</div>
 {% endblock %}

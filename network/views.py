@@ -13,10 +13,8 @@ import json
 from .models import User, Post, Comment, Following
 
 def index(request):
-    # Filter emails returned based on mailbox
     allposts = Post.objects.all()
     paginator = Paginator(allposts, 10)
-
     page_number = request.GET.get('page')
     posts = paginator.get_page(page_number)
     context = {'posts': posts}
@@ -116,23 +114,22 @@ def users(request):
 
 
 @login_required
+@require_http_methods(["POST"])
 def follow(request):
 
-    # Return user profile
-    if request.method == "POST":
-        # Query for users
-        user = User.objects.get(pk=request.user.id)
-        following = user.following.all()
-        user_follow_id = request.POST.get('follow')
-        user_follow = User.objects.get(pk=user_follow_id)
+    # Query for users
+    user = User.objects.get(pk=request.user.id)
+    following = user.following.all()
+    user_follow_id = request.POST.get('follow')
+    user_follow = User.objects.get(pk=user_follow_id)
 
-        if following.filter(following__username=user_follow.username):
-            follow = following.filter(following__username=user_follow.username)
-            follow.delete()
-        else:
-            follow = Following.objects.create(user=user, following=user_follow)
-            follow.save()
-        print(request.path_info)
+    if following.filter(following__username=user_follow.username):
+        follow = following.filter(following__username=user_follow.username)
+        follow.delete()
+    else:
+        follow = Following.objects.create(user=user, following=user_follow)
+        follow.save()
+
     return redirect(request.META.get('HTTP_REFERER', 'redirect_if_referer_not_found'))
 
 @login_required
@@ -156,10 +153,7 @@ def following(request):
 @login_required
 def user(request, user_id):
 
-    try:
-        user = User.objects.get(pk=user_id)
-    except Post.DoesNotExist:
-        return JsonResponse({"error": "User not found."}, status=404)
+    user = get_object_or_404(User, pk=user_id)
     
     followers = user.followers.all()
     followersList = []
@@ -174,10 +168,7 @@ def user(request, user_id):
 def post(request, post_id):
 
     # Query for requested
-    try:
-        post = Post.objects.get(pk=post_id)
-    except Post.DoesNotExist:
-        return JsonResponse({"error": "Post not found."}, status=404)
+    post = get_object_or_404(User, pk=post_id)
 
     # Return contents
     if request.method == "GET":
