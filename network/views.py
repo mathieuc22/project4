@@ -168,7 +168,7 @@ def user(request, user_id):
 def post(request, post_id):
 
     # Query for requested
-    post = get_object_or_404(User, pk=post_id)
+    post = get_object_or_404(Post, pk=post_id)
 
     # Return contents
     if request.method == "GET":
