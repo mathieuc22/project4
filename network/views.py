@@ -7,17 +7,31 @@ from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 from django.core.paginator import Paginator
+from .forms import PostForm
 
 import json
 
 from .models import User, Post, Comment, Following
 
 def index(request):
+
+    if request.method == "POST":
+        form = PostForm(request.POST)
+        if form.is_valid():
+            # Create the post
+            post = Post(
+                author = request.user,
+                text = form.cleaned_data['body']
+            )
+            post.save()
+
+    form = PostForm()
     allposts = Post.objects.all()
     paginator = Paginator(allposts, 10)
     page_number = request.GET.get('page')
     posts = paginator.get_page(page_number)
-    context = {'posts': posts}
+
+    context = {'posts': posts, 'form': form}
     return render(request, "network/index.html", context)
 
 def login_view(request):

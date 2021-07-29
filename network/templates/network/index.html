@@ -9,9 +9,10 @@
         <section id="compose-view" class="compose">
             <div class="card-body">
                 <h4>New Post</h4>
-                <form method="POST" id="compose-form" class="compose__form">
-                    <textarea class="form-control compose__body" id="compose-body" placeholder="Say something!" required></textarea>
-                    <input type="submit" value="Post" class="button compose__submit"/>
+                <form method="POST" action="{% url 'index' %}" id="compose-form" class="compose__form">
+                    {% csrf_token %}
+                    {{ form }}
+                    <input type="submit" value="Send" class="button compose__submit"/>
                 </form>
             </div>
         </section>

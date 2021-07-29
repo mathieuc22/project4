@@ -12,7 +12,7 @@
         {% if user_network != request.user %}
         <form method="POST" id="follow-form" action="{% url 'follow' %}">{% csrf_token %}
             <input type="hidden" name="follow" value="{{ user_network.id }}">
-            <button id="user-{{ user.id }}" class="button button--edit" type="submit">
+            <button id="user-{{ user.id }}" class="button button--edit button--primary" type="submit">
                 {% if request.user in followers %}
                     Unfollow
                 {% else %}

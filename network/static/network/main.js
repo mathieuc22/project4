@@ -9,19 +9,11 @@ document.addEventListener('DOMContentLoaded', function() {
     switch (page) {
       case "":
       case "posts":
-        try {
-          // Clear out composition fields
-          document.querySelector('#compose-body').value = '';
-          // Prevent submit on form and call the compose API
-          document.querySelector('#compose-form').addEventListener('submit', send_post);
           // Like Unlike logic on hearts
           document.querySelectorAll('.button--like').forEach(button => { button.addEventListener('click', (event) => like_post(event)) });
           // Edit users posts
           document.querySelectorAll('.button--edit').forEach(button => { button.addEventListener('click', edit_post) });
-        
-        } catch {
 
-        }
         break;
       case "following":
         document.getElementById('compose-view').style.display = 'none';
@@ -56,6 +48,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // remove the existing event on the button
     const button = event.target;
     button.removeEventListener('click', edit_post);
+    button.classList.add('button--save')
     button.innerHTML = 'Save';
     button.addEventListener('click', save_post);
 
@@ -67,6 +60,7 @@ document.addEventListener('DOMContentLoaded', function() {
     postText.style.display = 'none'
     const postEdit = document.createElement("textarea");
     postEdit.setAttribute('class','form-control posts__textarea');
+    postEdit.setAttribute('rows','3');
     postEdit.setAttribute('id',`post-edit-${id}`);
     postEdit.innerHTML = postText.innerHTML.replace(/<br\s*[\/]?>/gi, "\n");
     postContainter.appendChild(postEdit);
@@ -84,26 +78,28 @@ document.addEventListener('DOMContentLoaded', function() {
     const postText = document.querySelector(`#post-content-${id}`);
     const postEdit = document.querySelector(`#post-edit-${id}`);
 
-    fetch(`/posts/${id}`, {
-      method: 'PUT',
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        text: postEdit.value
+    if (postEdit.value) {
+      fetch(`/posts/${id}`, {
+        method: 'PUT',
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          text: postEdit.value
+        })
       })
-    })
-    .then(response => response.json())
-    .then(post => {
-        // Print result
-        postText.removeAttribute('style');
-        postText.innerHTML = post.newText.replace(/\n/g, '<br />');
-        postEdit.remove();
-        button.innerHTML = 'Edit';
-        button.addEventListener('click', edit_post);
-    });
-
+      .then(response => response.json())
+      .then(post => {
+          // Print result
+          postText.removeAttribute('style');
+          postText.innerHTML = post.newText.replace(/\n/g, '<br />');
+          postEdit.remove();
+          button.innerHTML = 'Edit';
+          button.classList.remove('button--primary')
+          button.addEventListener('click', edit_post);
+      });
+    }
   }
   
   function like_post(event) {

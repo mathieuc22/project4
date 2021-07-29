@@ -52,7 +52,10 @@ main {
 	padding:0px 15px;
 	text-decoration:none;
     transition: 0.3s;
-    margin-bottom: 10px;
+}
+
+.button--primary {
+    background:var(--first-color);
 }
 
 .button--edit:hover {
@@ -214,6 +217,7 @@ main {
 
     resize: none;
     border: 1px solid var(--fourth-color);
+    border-radius: 10px;
     
 }
 
@@ -285,6 +289,7 @@ main {
     gap: 5px;
     max-width: 800px;
     width: 100%;
+    margin-top: 20px;
 }
 
 .activities {
