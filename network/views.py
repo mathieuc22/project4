@@ -15,6 +15,7 @@ from .models import User, Post, Comment, Following
 
 def index(request):
 
+    # For new post get data from the compose form
     if request.method == "POST":
         form = PostForm(request.POST)
         if form.is_valid():
@@ -25,6 +26,7 @@ def index(request):
             )
             post.save()
 
+    # Empty the form and retrieve the posts
     form = PostForm()
     allposts = Post.objects.all()
     paginator = Paginator(allposts, 10)
@@ -84,32 +86,6 @@ def register(request):
         return HttpResponseRedirect(reverse("index"))
     else:
         return render(request, "network/register.html")
-
-@csrf_exempt
-@login_required
-def new_post(request):
-    # Composing a new email must be via POST
-    if request.method != "POST":
-        return JsonResponse({"error": "POST request required."}, status=400)
-
-    # Get contents of the post
-    data = json.loads(request.body)
-    body = data.get("body", "")
-    
-    # Check content
-    if body == "":
-        return JsonResponse({
-            "error": "Please add some content."
-        }, status=400)
-
-    # Create the post
-    post = Post(
-        author = request.user,
-        text = body
-    )
-    post.save()
-
-    return JsonResponse({"message": "Post sent successfully."}, status=201)
 
 @login_required
 @require_http_methods(["POST"])
@@ -172,7 +148,6 @@ def post(request, post_id):
     # Get contents
     data = json.loads(request.body)
     
-
     if "like" in data:
         if request.user not in post.likes.all():
             post.likes.add(request.user)

@@ -62,13 +62,14 @@
         {% if posts.paginator.num_pages > 1%}
         <ul class="pages">
             {% if posts.has_previous %}
+            <li class="pages__item"><a class="pages__link" href="?page={{ 1 }}">First</a></li>
             <li class="pages__item">
                 <a class="pages__link" href="?page={{ posts.previous_page_number }}" aria-label="Previous">
                 <span aria-hidden="true">&laquo;</span>
             </a>
             </li>
-            <li class="pages__item"><a class="pages__link" href="?page={{ posts.previous_page_number }}">{{ posts.previous_page_number }}</a></li>
             {% else %}
+            <li class="pages__item pages__item--disabled">First</li>
             <li class="pages__item pages__item--disabled">
                 <span aria-hidden="true">&laquo;</span>
             </a>
@@ -78,17 +79,18 @@
             <li class="pages__item {{ posts.number }} pages__item--active">{{ posts.number }}</li>
 
             {% if posts.has_next %}
-            <li class="pages__item"><a class="pages__link" href="?page={{ posts.next_page_number }}">{{ posts.next_page_number }}</a></li>
             <li class="pages__item">
                 <a class="pages__link" href="?page={{ posts.next_page_number }}" aria-label="Next">
                 <span aria-hidden="true">&raquo;</span>
             </a>
             </li>
+            <li class="pages__item"><a class="pages__link" href="?page={{ posts.num_pages }}">Last</a></li>
             {% else %}
             <li class="pages__item pages__item--disabled">
                 <span aria-hidden="true">&raquo;</span>
             </a>
             </li>
+            <li class="pages__item pages__item--disabled">Last</li>
             {% endif %}
         </ul>
         {% endif %}
