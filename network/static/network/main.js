@@ -15,9 +15,9 @@ document.addEventListener('DOMContentLoaded', function() {
           // Prevent submit on form and call the compose API
           document.querySelector('#compose-form').addEventListener('submit', send_post);
           // Like Unlike logic on hearts
-          document.querySelectorAll('.button-like').forEach(button => { button.addEventListener('click', (event) => like_post(event)) });
+          document.querySelectorAll('.button--like').forEach(button => { button.addEventListener('click', (event) => like_post(event)) });
           // Edit users posts
-          document.querySelectorAll('.button-edit').forEach(button => { button.addEventListener('click', edit_post) });
+          document.querySelectorAll('.button--edit').forEach(button => { button.addEventListener('click', edit_post) });
         
         } catch {
 
@@ -61,13 +61,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // create the textarea and hide the paragraph
     const id = button.id.split('-')[2];
+    console.log(id)
     const postContainter = document.querySelector(`#post-container-${id}`);
     const postText = document.querySelector(`#post-content-${id}`);
     postText.style.display = 'none'
     const postEdit = document.createElement("textarea");
-    postEdit.setAttribute('class','form-control');
+    postEdit.setAttribute('class','form-control posts__textarea');
     postEdit.setAttribute('id',`post-edit-${id}`);
-    postEdit.innerHTML = postText.innerHTML;
+    postEdit.innerHTML = postText.innerHTML.replace(/<br\s*[\/]?>/gi, "\n");
     postContainter.appendChild(postEdit);
 
 
@@ -97,7 +98,7 @@ document.addEventListener('DOMContentLoaded', function() {
     .then(post => {
         // Print result
         postText.removeAttribute('style');
-        postText.innerHTML = post.newText;
+        postText.innerHTML = post.newText.replace(/\n/g, '<br />');
         postEdit.remove();
         button.innerHTML = 'Edit';
         button.addEventListener('click', edit_post);
@@ -115,10 +116,10 @@ document.addEventListener('DOMContentLoaded', function() {
   
     if (likeButton.classList[0]==='far') {
       likeTag = 1
-      likeButton.setAttribute('class','fas fa-heart');
+      likeButton.setAttribute('class','fas fa-heart like--active');
     } else {
       likeTag = 0
-      likeButton.setAttribute('class','far fa-heart');
+      likeButton.setAttribute('class','far fa-heart like');
     }
   
     fetch(`/posts/${id}`, {

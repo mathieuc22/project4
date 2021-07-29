@@ -6,17 +6,18 @@
         <!-- Required meta tags -->
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    
+        <link rel="icon" type="image/png" href="{% static 'network/icon.png' %}" />
         <title>{% block title %}Social Network{% endblock %}</title>
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.2/css/all.css" integrity="sha384-vSIIfh2YWi9wW0r9iZe7RJPrKwp6bG+s9QZMoITbCckVJqGCCRhc+ccxNcdpHuYu" crossorigin="anonymous">
         <link type="text/css" href="{% static 'network/styles.css' %}" rel="stylesheet">
+        <link href='https://fonts.googleapis.com/css?family=Droid Sans Mono' rel='stylesheet'>
     </head>
     <body>
 
         <header class="header">
             <nav class="navbar navbar-expand-lg navbar-light">
-                <a class="navbar-brand" id="index" href="{% url 'index' %}">Network</a>
+                <a class="navbar-brand" id="index" href="{% url 'index' %}"><img class="header__logo" src="{% static 'network/logo.png' %}" alt="logo Network"> Network</a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                   <span class="navbar-toggler-icon"></span>
                 </button>
@@ -55,6 +56,7 @@
             </nav>
         </header>
         <main class="main">
+            <div id="top"></div>
             {% block body %}
             {% endblock %}
         </main>
