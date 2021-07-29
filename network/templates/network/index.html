@@ -6,7 +6,7 @@
     <div class="main__container">
         <h1 class="main__title">All Posts</h2>
         {% if user.is_authenticated %}
-        <div id="compose-view" class="compose">
+        <section id="compose-view" class="compose">
             <div class="card-body">
                 <h4>New Post</h4>
                 <form method="POST" id="compose-form" class="compose__form">
@@ -14,12 +14,12 @@
                     <input type="submit" value="Post" class="button compose__submit"/>
                 </form>
             </div>
-        </div>
+        </section>
         {% endif %}
 
-        <a href="#bottom"><i class="fas fa-arrow-down"></i></a>
+        <a href="#bottom"><i class="fas fa-arrow-down icon"></i></a>
 
-        <div id="post-view" class="posts">
+        <section id="post-view" class="posts">
         {% if posts %}
         {% for post in posts %}
             <div class="posts__post">
@@ -54,9 +54,9 @@
             </div>
         {% endfor %}
         {% else %}
-        <div class="card-text">No post yet</div>
+            <div class="card-text">No post yet</div>
         {% endif %}
-        </div>
+        </section>
         
         {% if posts.paginator.num_pages > 1%}
         <ul class="pages">
@@ -92,7 +92,7 @@
         </ul>
         {% endif %}
 
-        <a href="#top"><i class="fas fa-arrow-up"></i></a>
+        <a href="#top"><i class="fas fa-arrow-up icon"></i></a>
         <div id="bottom"></div>
 
     </div>

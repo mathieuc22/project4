@@ -98,22 +98,6 @@ def new_post(request):
     return JsonResponse({"message": "Post sent successfully."}, status=201)
 
 @login_required
-def users(request):
-
-    # Query for users
-    users = User.objects.all
-    user = User.objects.get(pk=request.user.id)
-    following = user.following.all()
-    followingList = []
-    for follow in following:
-        followingList.append(follow.following)
-
-    # Return user profile
-    if request.method == "GET":
-        return render(request, "network/users.html", {'users': users, 'following': followingList})
-
-
-@login_required
 @require_http_methods(["POST"])
 def follow(request):
 
@@ -165,43 +149,31 @@ def user(request, user_id):
 
 @csrf_exempt
 @login_required
+@require_http_methods(["PUT"])
 def post(request, post_id):
 
     # Query for requested
     post = get_object_or_404(Post, pk=post_id)
 
-    # Return contents
-    if request.method == "GET":
-        return render(request, "network/post.html", {'post': post})
-    elif request.method == "POST":
+    # Get contents
+    data = json.loads(request.body)
+    
+
+    if "like" in data:
         if request.user not in post.likes.all():
             post.likes.add(request.user)
         else:
             post.likes.remove(request.user)
         post.save()
-        return render(request, "network/post.html", {'post': post})
-
-    # Update whether email is read or should be archived
-    elif request.method == "PUT":
-        # Get contents
-        data = json.loads(request.body)
-        
-
-        if "like" in data:
-            if request.user not in post.likes.all():
-                post.likes.add(request.user)
-            else:
-                post.likes.remove(request.user)
-            post.save()
-            response = JsonResponse({"status": "Like updated.", "nbLikes": post.number_of_likes()})
-        else:
-            post.text = data.get("text")
-            post.save()
-            print(post.updated_on)
-            response = JsonResponse({
-                "status": "Text updated",
-                "newText": post.text,
-                "updateDate": post.updated_on.strftime("%B %d, %Y, %H:%M %p"),
-                })
-                
-        return response
+        response = JsonResponse({"status": "Like updated.", "nbLikes": post.number_of_likes()})
+    else:
+        post.text = data.get("text")
+        post.save()
+        print(post.updated_on)
+        response = JsonResponse({
+            "status": "Text updated",
+            "newText": post.text,
+            "updateDate": post.updated_on.strftime("%B %d, %Y, %H:%M %p"),
+            })
+            
+    return response

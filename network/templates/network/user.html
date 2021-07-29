@@ -3,47 +3,42 @@
 
 {% block body %}
 
-<div class="container">
-    <div class="card">
-        <h1 class="card-header">Profile</h1>
-        <div class="card-body">
-            <h2 class="card-title">{{ user_network.username }}</h2>
-            <p class="card-text">
-            {% if user_network != request.user %}
-            <form method="POST" id="follow-form" action="{% url 'follow' %}">{% csrf_token %}
-                <input type="hidden" name="follow" value="{{ user_network.id }}">
-                <button id="user-{{ user.id }}" class="btn btn-primary" type="submit">
-                    {% if request.user in followers %}
-                        Unfollow
-                    {% else %}
-                        Follow
-                    {% endif %}
-                </button>
-            </form>
-            {% endif %}
-            </p>
-            <p class="card-text">Followers: {{ user_network.followers.count }}</p>
-            <div class="row">
-                <div class="col-sm-6">
-            <div class="card">
-                <h3 class="card-header">Posts: </h3>
-                <ul class="list-group list-group-flush">
-                {% for post in user_network.posts.all %}
-                <li class="list-group-item text-truncate">{{ post }}</li>
-                {% endfor %}
+<div class="main__container">
+    <h1 class="main__title">Profile</h1>
+    <section class="profile">
+        <img class="profile__image" src="{% static 'network/undraw_avatar.svg'%}" alt="avatar">
+        <h2 class="profile__name">{{ user_network.username }}</h2>
+        <p class="profile__followers">Followers: {{ user_network.followers.count }}</p>
+        {% if user_network != request.user %}
+        <form method="POST" id="follow-form" action="{% url 'follow' %}">{% csrf_token %}
+            <input type="hidden" name="follow" value="{{ user_network.id }}">
+            <button id="user-{{ user.id }}" class="button button--edit" type="submit">
+                {% if request.user in followers %}
+                    Unfollow
+                {% else %}
+                    Follow
+                {% endif %}
+            </button>
+        </form>
+        {% endif %}
+        <div class="profile__activities">
+            <div class="activities">
+                <h3 class="activities__title">Posts</h3>
+                <ul class="activities__list">
+                    {% for post in user_network.posts.all %}
+                    <li class="activities__item">{{ post }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="activities">
+                <h3 class="activities__title">Following</h3>
+                <ul class="activities__list">
+                    {% for follow in user_network.following.all %}
+                    <li class="activities__item"><a class="posts__link" href="{% url 'user' user_id=follow.following.id %}"><i class="fas fa-user"></i> {{ follow.following }}</a></li>
+                    {% endfor %}
                 </ul>
             </div>
         </div>
-        <div class="col-sm-6">
-            <div class="card">
-                <h3 class="card-header">Following ({{ user_network.following.count }}): </h3>
-                <ul class="list-group list-group-flush">
-                {% for follow in user_network.following.all %}
-                <li class="list-group-item">{{ follow.following }}</li>
-                {% endfor %}
-                </ul>
-            </div>
-        </div>
-    </div>
+    </section>
 </div>
 {% endblock %}

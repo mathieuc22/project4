@@ -31,6 +31,10 @@ main {
     padding-bottom: 10px;
 }
 
+.icon {
+    color: var(--fourth-color);
+}
+
 .button {
     background:none;
     border:none;
@@ -261,3 +265,61 @@ main {
 .like--active {
     color: hotpink;
 }
+
+.profile {
+    display: flex;
+    flex-direction: column;
+    max-width: 800px;
+    width: 100%;
+    align-items: center;
+}
+
+.profile__image {
+    max-width: 200px;
+}
+
+.profile__activities {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 5px;
+    max-width: 800px;
+    width: 100%;
+}
+
+.activities {
+    flex: 1;
+    border: 1px solid var(--fourth-color);
+    padding: 20px;
+    width: 50%;
+}
+
+.activities__title {
+    font-size: 1em;
+    font-weight: 700;
+    text-align: center;
+    color: var(--third-color);
+    background: var(--fourth-color);
+}
+
+.activities__list {
+    font-size: 0.9em;
+}
+
+.activities__item {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+@media (max-width: 799px) {
+    .profile__activities {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        width: 100%;
+    }
+    .activities {
+        width: 100%;
+    }
+  }

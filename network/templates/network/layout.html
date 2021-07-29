@@ -32,9 +32,6 @@
                             <li class="nav-item">
                             <a class="nav-link" id="all-posts" href="{% url 'posts' %}">All Posts</a>
                             </li>
-                            <li class="nav-item">
-                            <a class="nav-link" id="all-users" href="{% url 'users' %}">All Users</a>
-                            </li>
                             {% if user.is_authenticated %}
                                 <li class="nav-item">
                                     <a class="nav-link" href="{% url 'following' %}">Following</a>
