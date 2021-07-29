@@ -13,10 +13,8 @@ import json
 from .models import User, Post, Comment, Following
 
 def index(request):
-    # Filter emails returned based on mailbox
     allposts = Post.objects.all()
     paginator = Paginator(allposts, 10)
-
     page_number = request.GET.get('page')
     posts = paginator.get_page(page_number)
     context = {'posts': posts}
@@ -100,39 +98,22 @@ def new_post(request):
     return JsonResponse({"message": "Post sent successfully."}, status=201)
 
 @login_required
-def users(request):
-
-    # Query for users
-    users = User.objects.all
-    user = User.objects.get(pk=request.user.id)
-    following = user.following.all()
-    followingList = []
-    for follow in following:
-        followingList.append(follow.following)
-
-    # Return user profile
-    if request.method == "GET":
-        return render(request, "network/users.html", {'users': users, 'following': followingList})
-
-
-@login_required
+@require_http_methods(["POST"])
 def follow(request):
 
-    # Return user profile
-    if request.method == "POST":
-        # Query for users
-        user = User.objects.get(pk=request.user.id)
-        following = user.following.all()
-        user_follow_id = request.POST.get('follow')
-        user_follow = User.objects.get(pk=user_follow_id)
+    # Query for users
+    user = User.objects.get(pk=request.user.id)
+    following = user.following.all()
+    user_follow_id = request.POST.get('follow')
+    user_follow = User.objects.get(pk=user_follow_id)
 
-        if following.filter(following__username=user_follow.username):
-            follow = following.filter(following__username=user_follow.username)
-            follow.delete()
-        else:
-            follow = Following.objects.create(user=user, following=user_follow)
-            follow.save()
-        print(request.path_info)
+    if following.filter(following__username=user_follow.username):
+        follow = following.filter(following__username=user_follow.username)
+        follow.delete()
+    else:
+        follow = Following.objects.create(user=user, following=user_follow)
+        follow.save()
+
     return redirect(request.META.get('HTTP_REFERER', 'redirect_if_referer_not_found'))
 
 @login_required
@@ -156,10 +137,7 @@ def following(request):
 @login_required
 def user(request, user_id):
 
-    try:
-        user = User.objects.get(pk=user_id)
-    except Post.DoesNotExist:
-        return JsonResponse({"error": "User not found."}, status=404)
+    user = get_object_or_404(User, pk=user_id)
     
     followers = user.followers.all()
     followersList = []
@@ -171,46 +149,31 @@ def user(request, user_id):
 
 @csrf_exempt
 @login_required
+@require_http_methods(["PUT"])
 def post(request, post_id):
 
     # Query for requested
-    try:
-        post = Post.objects.get(pk=post_id)
-    except Post.DoesNotExist:
-        return JsonResponse({"error": "Post not found."}, status=404)
+    post = get_object_or_404(Post, pk=post_id)
 
-    # Return contents
-    if request.method == "GET":
-        return render(request, "network/post.html", {'post': post})
-    elif request.method == "POST":
+    # Get contents
+    data = json.loads(request.body)
+    
+
+    if "like" in data:
         if request.user not in post.likes.all():
             post.likes.add(request.user)
         else:
             post.likes.remove(request.user)
         post.save()
-        return render(request, "network/post.html", {'post': post})
-
-    # Update whether email is read or should be archived
-    elif request.method == "PUT":
-        # Get contents
-        data = json.loads(request.body)
-        
-
-        if "like" in data:
-            if request.user not in post.likes.all():
-                post.likes.add(request.user)
-            else:
-                post.likes.remove(request.user)
-            post.save()
-            response = JsonResponse({"status": "Like updated.", "nbLikes": post.number_of_likes()})
-        else:
-            post.text = data.get("text")
-            post.save()
-            print(post.updated_on)
-            response = JsonResponse({
-                "status": "Text updated",
-                "newText": post.text,
-                "updateDate": post.updated_on.strftime("%B %d, %Y, %H:%M %p"),
-                })
-                
-        return response
+        response = JsonResponse({"status": "Like updated.", "nbLikes": post.number_of_likes()})
+    else:
+        post.text = data.get("text")
+        post.save()
+        print(post.updated_on)
+        response = JsonResponse({
+            "status": "Text updated",
+            "newText": post.text,
+            "updateDate": post.updated_on.strftime("%B %d, %Y, %H:%M %p"),
+            })
+            
+    return response
